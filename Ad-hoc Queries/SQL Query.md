@@ -131,42 +131,44 @@ GROUP BY
 ```sql
 WITH actual_trips AS (
 -- Aggregate actual trips by city and month
-SELECT	ft.city_id,
-        DATE_FORMAT(ft.date, '%Y-%m-01') AS month,
-        COUNT(ft.trip_id) AS total_actual_trips
-FROM 	trips_db.fact_trips ft
+SELECT	fact_trips.city_id,
+        DATE_FORMAT(fact_trips.date, '%Y-%m-01') AS month,
+        COUNT(fact_trips.trip_id) AS total_actual_trips
+FROM 	trips_db.fact_trips
 GROUP BY
-	ft.city_id, DATE_FORMAT(ft.date, '%Y-%m-01')
+	fact_trips.city_id, DATE_FORMAT(fact_trips.date, '%Y-%m-01')
 ),
 performance_comparison AS (
 -- Join aggregated trips with target trips and calculate metrics
-SELECT	mt.city_id,
-        mt.month,
-        mt.total_target_trips,
-        COALESCE(at.total_actual_trips, 0) AS total_actual_trips,
-        CASE 
-            WHEN COALESCE(at.total_actual_trips, 0) > mt.total_target_trips THEN 'Above Target'
-            ELSE 'Below Target'
-        END AS performance_category,
-        ROUND(
-            (COALESCE(at.total_actual_trips, 0) - mt.total_target_trips) / mt.total_target_trips * 100, 
-            2
-        ) AS percentage_difference
-FROM targets_db.monthly_target_trips mt
-LEFT JOIN
-	actual_trips at
-ON 	mt.city_id = at.city_id AND mt.month = at.month
+SELECT	monthly_target_trips.city_id,
+	monthly_target_trips.month,
+	monthly_target_trips.total_target_trips,
+	COALESCE(actual_trips.total_actual_trips, 0) AS total_actual_trips,
+	CASE
+		WHEN COALESCE(actual_trips.total_actual_trips, 0) > monthly_target_trips.total_target_trips THEN 'Above Target'
+		ELSE 'Below Target'
+	END AS performance_status,
+	ROUND(
+		(COALESCE(actual_trips.total_actual_trips, 0) - monthly_target_trips.total_target_trips) / monthly_target_trips.total_target_trips * 100, 
+                2) AS percentage_difference
+FROM 	targets_db.monthly_target_trips
+LEFT JOIN 
+	actual_trips
+ON	monthly_target_trips.city_id = actual_trips.city_id AND monthly_target_trips.month = actual_trips.month
 )
 -- Final report
-SELECT	city_id,
-    	month,
-    	total_target_trips,
-    	total_actual_trips,
-    	performance_category,
-    	percentage_difference
-FROM 	performance_comparison
+SELECT	dc.city_name,
+	DATE_FORMAT(pc.month, '%M') AS month_name,
+	pc.total_target_trips,
+	pc.total_actual_trips,
+	pc.performance_status,
+	pc.percentage_difference
+FROM 	performance_comparison pc
+INNER JOIN
+	trips_db.dim_city dc
+ON 	pc.city_id = dc.city_id
 ORDER BY
-	city_id, month
+	dc.city_name, month_name
 ;
 ```
 
