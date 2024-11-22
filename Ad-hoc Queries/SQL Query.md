@@ -3,7 +3,7 @@
 
 ```sql
 /* Before moving to the ad-hoc questions, 
-	take a look at each table of trips_db.
+	take a look at each table of trips_db and targets_db.
 */
 
 -- trips_db schema
@@ -13,6 +13,12 @@ SELECT * FROM trips_db.dim_date;
 SELECT * FROM trips_db.dim_repeat_trip_distribution;
 SELECT * FROM trips_db.fact_passenger_summary;
 SELECT * FROM trips_db.fact_trips;
+
+-- targets_db schema
+
+SELECT * FROM targets_db.city_target_passenger_rating;
+SELECT * FROM targets_db.monthly_target_new_passengers;
+SELECT * FROM targets_db.monthly_target_trips; 
 ```
 
 ```sql
@@ -71,16 +77,6 @@ GROUP BY
 
 >Additionally, calculate the % difference between actual and target trips to quantify the performance gap
 
-```sql
-/* Before moving to the questions, 
-	take a look at each table of targets_db.
-*/
 
--- targets_db schema
-
-SELECT * FROM targets_db.city_target_passenger_rating;
-SELECT * FROM targets_db.monthly_target_new_passengers;
-SELECT * FROM targets_db.monthly_target_trips;
-```
 
 
