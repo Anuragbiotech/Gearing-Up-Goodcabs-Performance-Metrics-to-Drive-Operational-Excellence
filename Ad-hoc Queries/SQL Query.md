@@ -173,3 +173,67 @@ ORDER BY
 ```
 
 
+[Uploading Business_Request_2.txt…]()
+
+|city_name	|month_name	|total_target_trips	|total_actual_trips	|performance_status	|percentage_difference|
+|---------------|---------------|-----------------------|-----------------------|-----------------------|---------------------|
+|Chandigarh	|April		|6000			|5566			|Below Target		|-7.23
+|Chandigarh	|February	|7000			|7387			|Above Target		|5.53
+|Chandigarh	|January	|7000			|6810			|Below Target		|-2.71
+|Chandigarh	|June		|6000			|6029			|Above Target		|0.48
+|Chandigarh	|March		|7000			|6569			|Below Target		|-6.16
+|Chandigarh	|May		|6000			|6620			|Above Target		|10.33
+|Coimbatore	|April		|3500			|3661			|Above Target		|4.60
+|Coimbatore	|February	|3500			|3404			|Below Target		|-2.74
+|Coimbatore	|January	|3500			|3651			|Above Target		|4.31
+|Coimbatore	|June		|3500			|3158			|Below Target		|-9.77
+|Coimbatore	|March		|3500			|3680			|Above Target		|5.14
+|Coimbatore	|May		|3500			|3550			|Above Target		|1.43
+|Indore		|April		|7500			|7415			|Below Target		|-1.13
+|Indore		|February	|7000			|7210			|Above Target		|3.00
+|Indore		|January	|7000			|6737			|Below Target		|-3.76
+|Indore		|June		|7500			|6288			|Below Target		|-16.16
+|Indore		|March		|7000			|7019			|Above Target		|0.27
+|Indore		|May		|7500			|7787			|Above Target		|3.83
+|Jaipur		|April		|9500			|11406			|Above Target		|20.06
+|Jaipur		|February	|13000			|15872			|Above Target		|22.09
+|Jaipur		|January	|13000			|14976			|Above Target		|15.20
+|Jaipur		|June		|9500			|9842			|Above Target		|3.60
+|Jaipur		|March		|13000			|13317			|Above Target		|2.44
+|Jaipur		|May		|9500			|11475			|Above Target		|20.79
+|Kochi		|April		|9000			|9762			|Above Target		|8.47
+|Kochi		|February	|7500			|7688			|Above Target		|2.51
+|Kochi		|January	|7500			|7344			|Below Target		|-2.08
+|Kochi		|June		|9000			|6399			|Below Target		|-28.90
+|Kochi		|March		|7500			|9495			|Above Target		|26.60
+|Kochi		|May		|9000			|10014			|Above Target		|11.27
+|Lucknow	|April		|11000			|10212			|Below Target		|-7.16
+|Lucknow	|February	|13000			|12060			|Below Target		|-7.23
+|Lucknow	|January	|13000			|10858			|Below Target		|-16.48
+|Lucknow	|June		|11000			|10240			|Below Target		|-6.91
+|Lucknow	|March		|13000			|11224			|Below Target		|-13.66
+|Lucknow	|May		|11000			|9705			|Below Target		|-11.77
+|Mysore		|April		|2500			|2603			|Above Target		|4.12
+|Mysore		|February	|2000			|2668			|Above Target		|33.40
+|Mysore		|January	|2000			|2485			|Above Target		|24.25
+|Mysore		|June		|2500			|2842			|Above Target		|13.68
+|Mysore		|March		|2000			|2633			|Above Target		|31.65
+|Mysore		|May		|2500			|3007			|Above Target		|20.28
+|Surat		|April		|10000			|9831			|Below Target		|-1.69
+|Surat		|February	|9000			|9069			|Above Target		|0.77
+|Surat		|January	|9000			|8358			|Below Target		|-7.13
+|Surat		|June		|10000			|8544			|Below Target		|-14.56
+|Surat		|March		|9000			|9267			|Above Target		|2.97
+|Surat		|May		|10000			|9774			|Below Target		|-2.26
+|Vadodara	|April		|6500			|5941			|Below Target		|-8.60
+|Vadodara	|February	|6000			|5228			|Below Target		|-12.87
+|Vadodara	|January	|6000			|4775			|Below Target		|-20.42
+|Vadodara	|June		|6500			|4685			|Below Target		|-27.92
+|Vadodara	|March		|6000			|5598			|Below Target		|-6.70
+|Vadodara	|May		|6500			|5799			|Below Target		|-10.78
+|Visakhapatnam	|April		|5000			|4938			|Below Target		|-1.24
+|Visakhapatnam	|February	|4500			|4793			|Above Target		|6.51
+|Visakhapatnam	|January	|4500			|4468			|Below Target		|-0.71
+|Visakhapatnam	|June		|5000			|4478			|Below Target		|-10.44
+|Visakhapatnam	|March		|4500			|4877			|Above Target		|8.38
+|Visakhapatnam	|May		|5000			|4812			|Below Target		|-3.76
