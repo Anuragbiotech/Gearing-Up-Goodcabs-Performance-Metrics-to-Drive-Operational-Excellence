@@ -173,7 +173,7 @@ ORDER BY
 ```
 
 
-[Uploading Business_Request_2.txt…]()
+
 
 |city_name	|month_name	|total_target_trips	|total_actual_trips	|performance_status	|percentage_difference|
 |---------------|---------------|-----------------------|-----------------------|-----------------------|---------------------|
