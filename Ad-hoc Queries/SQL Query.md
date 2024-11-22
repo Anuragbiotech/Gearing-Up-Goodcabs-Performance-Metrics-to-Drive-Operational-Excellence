@@ -121,11 +121,11 @@ GROUP BY
 
 # Business Request 2: Monthly City-Level Trips Target Performance Report
 > Generate a report that evaluates the target performance for trips at the monthly and city level. For each city and month, compare the actual total trips with the target trips and categorize the performance as follows:
-
-> • If actual trips are greater than target trips, mark it as "Above Target".
-
-> • If actual trips are less or equal to target trips, mark it as "Below Target".
-
+> 
+>> • If actual trips are greater than target trips, mark it as "Above Target".
+>
+>> • If actual trips are less or equal to target trips, mark it as "Below Target".
+>
 >Additionally, calculate the % difference between actual and target trips to quantify the performance gap
 
 ```sql
@@ -171,9 +171,6 @@ ORDER BY
 	dc.city_name, month_name
 ;
 ```
-
-
-
 
 |city_name	|month_name	|total_target_trips	|total_actual_trips	|performance_status	|percentage_difference|
 |---------------|---------------|-----------------------|-----------------------|-----------------------|---------------------|
@@ -237,3 +234,27 @@ ORDER BY
 |Visakhapatnam	|June		|5000			|4478			|Below Target		|-10.44
 |Visakhapatnam	|March		|4500			|4877			|Above Target		|8.38
 |Visakhapatnam	|May		|5000			|4812			|Below Target		|-3.76
+
+**Explanation:**
+
+1. **Aggregate Actual Trips:**
+In the actual_trips CTE, we calculate the total number of trips (COUNT(ft.trip_id)) for each city and month by formatting fact_trips.date to the first day of the month using DATE_FORMAT(ft.date, '%Y-%m-01').
+2. **Join with Targets:**
+    In the performance_comparison CTE, we join the aggregated trips (actual_trips) with targets_db.monthly_target_trips using city_id and month.
+    The COALESCE function ensures that cities and months with no trips (missing in actual_trips) are treated as 0.
+3. **Categorize Performance:**
+Compare total_actual_trips with total_target_trips to determine if the performance is "Above Target" or "Below Target."
+4. **Calculate Percentage Difference:**
+Calculate the percentage difference using the formula:
+	
+ 	> Percentage Difference = (Actual Trips−Target Trips / Target Trips​) ×100
+	
+ 	Use ROUND to format it to two decimal places.
+5. **Final Report:**
+Select relevant columns and order by city_name and month for a structured report.
+
+**Further Explanation:**
+
+- A **LEFT JOIN** was used in the query to ensure that all cities and months from the targets_db.monthly_target_trips table are included in the report, even if there are no trips recorded in the trips_db.fact_trips table for that city and month.
+
+- The expression **DATE_FORMAT(ft.date, '%Y-%m-01') AS month** was used to standardize all dates in fact_trips to the first day of the respective month, enabling us to group and compare data at the monthly level.
