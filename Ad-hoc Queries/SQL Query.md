@@ -131,33 +131,33 @@ GROUP BY
 
 ```sql
 WITH actual_trips AS (
--- Aggregate actual trips by city and month
-SELECT	fact_trips.city_id,
-        DATE_FORMAT(fact_trips.date, '%Y-%m-01') AS month,
-        COUNT(fact_trips.trip_id) AS total_actual_trips
-FROM 	trips_db.fact_trips
-GROUP BY
-	fact_trips.city_id, DATE_FORMAT(fact_trips.date, '%Y-%m-01')
+	-- Aggregate actual trips by city and month
+	SELECT	fact_trips.city_id,
+	        DATE_FORMAT(fact_trips.date, '%Y-%m-01') AS month,
+	        COUNT(fact_trips.trip_id) AS total_actual_trips
+	FROM 	trips_db.fact_trips
+	GROUP BY
+		fact_trips.city_id, DATE_FORMAT(fact_trips.date, '%Y-%m-01')
 ),
 performance_comparison AS (
--- Join aggregated trips with target trips and calculate metrics
-SELECT	monthly_target_trips.city_id,
-	monthly_target_trips.month,
-	monthly_target_trips.total_target_trips,
-	COALESCE(actual_trips.total_actual_trips, 0) AS total_actual_trips,
-	CASE
-		WHEN COALESCE(actual_trips.total_actual_trips, 0) > monthly_target_trips.total_target_trips THEN 'Above Target'
-		ELSE 'Below Target'
-	END AS performance_status,
-	ROUND(
+	-- Join aggregated trips with target trips and calculate metrics
+	SELECT	monthly_target_trips.city_id,
+		monthly_target_trips.month,
+		monthly_target_trips.total_target_trips,
+		COALESCE(actual_trips.total_actual_trips, 0) AS total_actual_trips,
+		CASE
+			WHEN COALESCE(actual_trips.total_actual_trips, 0) > monthly_target_trips.total_target_trips THEN 'Above Target'
+			ELSE 'Below Target'
+		END AS performance_status,
+		ROUND(
 		(COALESCE(actual_trips.total_actual_trips, 0) - monthly_target_trips.total_target_trips) / monthly_target_trips.total_target_trips * 100, 
                 2) AS percentage_difference
-FROM 	targets_db.monthly_target_trips
-LEFT JOIN 
-	actual_trips
-ON	monthly_target_trips.city_id = actual_trips.city_id AND monthly_target_trips.month = actual_trips.month
-)
--- Final report
+	FROM 	targets_db.monthly_target_trips
+	LEFT JOIN 
+		actual_trips
+	ON	monthly_target_trips.city_id = actual_trips.city_id AND monthly_target_trips.month = actual_trips.month
+	)
+	-- Final report
 SELECT	dc.city_name,
 	DATE_FORMAT(pc.month, '%M') AS month_name,
 	pc.total_target_trips,
@@ -271,16 +271,16 @@ Select relevant columns and order by city_name and month for a structured report
 
 ```sql
 WITH city_total_repeat AS (
--- Calculate total repeat passengers per city
-SELECT	drtd.city_id,
-        SUM(drtd.repeat_passenger_count) AS total_repeat_passengers
-FROM trips_db.dim_repeat_trip_distribution drtd
-WHERE	CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED) BETWEEN 2 AND 10
-	GROUP BY drtd.city_id
+	-- Calculate total repeat passengers per city
+	SELECT	drtd.city_id,
+  	      SUM(drtd.repeat_passenger_count) AS total_repeat_passengers
+	FROM trips_db.dim_repeat_trip_distribution drtd
+	WHERE	CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED) BETWEEN 2 AND 10
+		GROUP BY drtd.city_id
 ),
 percentage_distribution AS (
--- Calculate percentage distribution for each trip count in each city
-SELECT	drtd.city_id,
+	-- Calculate percentage distribution for each trip count in each city
+	SELECT	drtd.city_id,
         CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED) AS trip_count_numeric,
         ROUND(
             drtd.repeat_passenger_count * 100.0 / ctr.total_repeat_passengers, 
@@ -329,5 +329,56 @@ ORDER BY
 |Visakhapatnam	|9.89		|6.46		|2.25		|1.25		|0.78		|0.47		|0.27		|0.20		|0.22
 
 ```
+
+# Business Request - 4: Identify Cities with Highest and Lowest Total New Passengers
+>Generate a report that calculates the total new passengers for each city and ranks them based on this value. Identify the top 3 cities with the highest number of new passengers as well as the bottom 3 cities with the lowest number of new passengers, categorising them as "Top 3" and "Bottom 3" accordingly.
+
+```sql
+WITH city_total_new_passengers AS (
+    -- Calculate total new passengers for each city
+    SELECT	fps.city_id,
+		dc.city_name,
+		SUM(fps.new_passengers) AS total_new_passengers
+    FROM	trips_db.fact_passenger_summary fps
+    INNER JOIN	
+		trips_db.dim_city dc
+    ON		fps.city_id = dc.city_id
+    GROUP BY
+		fps.city_id, dc.city_name
+),
+city_ranking AS (
+    -- Rank cities based on total new passengers
+    SELECT	ctnp.city_id,
+		ctnp.city_name,
+		ctnp.total_new_passengers,
+		RANK() OVER (ORDER BY ctnp.total_new_passengers DESC) AS rank_desc,
+		RANK() OVER (ORDER BY ctnp.total_new_passengers ASC) AS rank_asc
+    FROM	city_total_new_passengers ctnp
+),
+categorized_cities AS (
+    -- Categorize cities as "Top 3" or "Bottom 3"
+    SELECT	cr.city_id,
+		cr.city_name,
+		cr.total_new_passengers,
+		CASE 
+			WHEN cr.rank_desc <= 3 THEN 'Top 3'
+			WHEN cr.rank_asc <= 3 THEN 'Bottom 3'
+			ELSE 'Others'
+		END AS category
+    FROM	city_ranking cr
+)
+-- Final report: Show only Top 3 and Bottom 3 cities
+SELECT	city_id,
+	city_name,
+	total_new_passengers,
+	category
+FROM	categorized_cities
+WHERE	category IN ('Top 3', 'Bottom 3')
+ORDER BY
+	category DESC, total_new_passengers DESC
+;
+```
+
+![image](https://github.com/user-attachments/assets/f2a5382c-fd03-4ea1-847e-77bb6cba4887)
 
 
