@@ -119,6 +119,7 @@ GROUP BY
 ```
 ![image](https://github.com/user-attachments/assets/25ea9904-68e3-4f72-b7da-a8a7670cff59)
 
+
 # Business Request 2: Monthly City-Level Trips Target Performance Report
 > Generate a report that evaluates the target performance for trips at the monthly and city level. For each city and month, compare the actual total trips with the target trips and categorize the performance as follows:
 > 
@@ -170,7 +171,7 @@ ON 	pc.city_id = dc.city_id
 ORDER BY
 	dc.city_name, month_name
 ;
-```
+
 
 |city_name	|month_name	|total_target_trips	|total_actual_trips	|performance_status	|percentage_difference|
 |---------------|---------------|-----------------------|-----------------------|-----------------------|---------------------|
@@ -235,6 +236,7 @@ ORDER BY
 |Visakhapatnam	|March		|4500			|4877			|Above Target		|8.38
 |Visakhapatnam	|May		|5000			|4812			|Below Target		|-3.76
 
+```
 **Explanation:**
 
 1. **Aggregate Actual Trips:**
@@ -258,3 +260,74 @@ Select relevant columns and order by city_name and month for a structured report
 - A **LEFT JOIN** was used in the query to ensure that all cities and months from the targets_db.monthly_target_trips table are included in the report, even if there are no trips recorded in the trips_db.fact_trips table for that city and month.
 
 - The expression **DATE_FORMAT(ft.date, '%Y-%m-01') AS month** was used to standardize all dates in fact_trips to the first day of the respective month, enabling us to group and compare data at the monthly level.
+
+# Business Request - 3: City-Level Passenger Trip Frequency Report
+> Generate a report that shows the percentage distribution of repeat passengers by the number of trips they have taken in each city. Calculate the percentage of repeat passengers who took 2 trips, 3 trips, and so on, up to 10 trips.
+>
+> Each column should represent a trip count category, displaying the percentage of repeat passengers who fall into that category out of the total repeat passengers for that city.
+>
+> This report will help identify cities with high repeat trip frequency, which can indicate strong customer loyalty or frequent usage patterns.
+
+
+```sql
+WITH city_total_repeat AS (
+-- Calculate total repeat passengers per city
+SELECT	drtd.city_id,
+        SUM(drtd.repeat_passenger_count) AS total_repeat_passengers
+FROM trips_db.dim_repeat_trip_distribution drtd
+WHERE	CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED) BETWEEN 2 AND 10
+	GROUP BY drtd.city_id
+),
+percentage_distribution AS (
+-- Calculate percentage distribution for each trip count in each city
+SELECT	drtd.city_id,
+        CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED) AS trip_count_numeric,
+        ROUND(
+            drtd.repeat_passenger_count * 100.0 / ctr.total_repeat_passengers, 
+            2
+        ) AS percentage
+	FROM trips_db.dim_repeat_trip_distribution drtd
+INNER JOIN
+	city_total_repeat ctr
+ON	drtd.city_id = ctr.city_id
+WHERE	CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED) BETWEEN 2 AND 10
+)
+-- Pivot-style query to display percentages as columns for trip counts
+SELECT	dc.city_name,
+    	MAX(CASE WHEN pd.trip_count_numeric = 2 THEN pd.percentage ELSE 0 END) AS `2-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 3 THEN pd.percentage ELSE 0 END) AS `3-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 4 THEN pd.percentage ELSE 0 END) AS `4-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 5 THEN pd.percentage ELSE 0 END) AS `5-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 6 THEN pd.percentage ELSE 0 END) AS `6-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 7 THEN pd.percentage ELSE 0 END) AS `7-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 8 THEN pd.percentage ELSE 0 END) AS `8-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 9 THEN pd.percentage ELSE 0 END) AS `9-Trips`,
+    	MAX(CASE WHEN pd.trip_count_numeric = 10 THEN pd.percentage ELSE 0 END) AS `10-Trips`
+FROM	percentage_distribution pd
+INNER JOIN
+	trips_db.dim_city dc
+ON	pd.city_id = dc.city_id
+GROUP BY
+	dc.city_name
+ORDER BY
+	dc.city_name
+;
+
+
+
+|city_name	|2-Trips	|3-Trips	|4-Trips	|5-Trips	|6-Trips	|7-Trips	|8-Trips	|9-Trips	|10-Trips|
+|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|---------------|--------|
+|Chandigarh	|6.67		|3.59		|4.18		|2.50		|1.60		|1.48		|0.65		|0.59		|0.37	
+|Coimbatore	|2.47		|3.61		|2.82		|4.23		|4.43		|2.23		|1.22		|0.63		|0.47
+|Indore		|8.50		|4.35		|3.24		|2.40		|1.50		|0.98		|0.67		|0.61		|0.35
+|Jaipur		|10.32		|4.82		|2.49		|1.23		|1.19		|0.53		|0.58		|0.26		|0.25
+|Kochi		|12.73		|6.14		|2.74		|1.35		|1.09		|0.52		|0.38		|0.29		|0.21
+|Lucknow	|2.34		|3.33		|3.39		|3.67		|3.93		|2.56		|1.42		|0.50		|0.21
+|Mysore		|12.19		|4.81		|3.45		|1.29		|1.15		|0.61		|0.34		|0.20		|0.20
+|Surat		|2.10		|3.06		|3.99		|4.25		|4.26		|3.07		|1.56		|0.39		|0.31
+|Vadodara	|2.53		|3.01		|4.12		|3.96		|3.66		|2.55		|1.61		|0.48		|0.39
+|Visakhapatnam	|9.89		|6.46		|2.25		|1.25		|0.78		|0.47		|0.27		|0.20		|0.22
+
+```
+
+
