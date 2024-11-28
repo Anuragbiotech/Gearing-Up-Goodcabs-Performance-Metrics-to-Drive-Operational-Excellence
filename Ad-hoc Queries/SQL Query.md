@@ -54,7 +54,7 @@ CROSS JOIN
 ORDER BY
 		ctm.total_trips DESC
 ;
-
+```
 
 # Business Request 2: Monthly City-Level Trips Target Performance Report
 > Generate a report that evaluates the target performance for trips at the monthly and city level. For each city and month, compare the actual total trips with the target trips and categorize the performance as follows:
