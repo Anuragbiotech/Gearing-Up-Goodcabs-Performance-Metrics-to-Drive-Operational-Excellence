@@ -25,17 +25,17 @@ SELECT * FROM targets_db.monthly_target_trips;
 WITH city_trip_metrics AS (
     -- Calculate total trips, average fare per km, and average fare per trip for each city
     SELECT	ft.city_id,
-			dc.city_name,
-			COUNT(ft.trip_id) AS total_trips,
-			ROUND(AVG(ft.fare_amount / ft.distance_travelled_km), 2) AS avg_fare_per_km,
-			ROUND(AVG(ft.fare_amount), 2) AS avg_fare_per_trip
+		dc.city_name,
+		COUNT(ft.trip_id) AS total_trips,
+		ROUND(AVG(ft.fare_amount / ft.distance_travelled_km), 2) AS avg_fare_per_km,
+		ROUND(AVG(ft.fare_amount), 2) AS avg_fare_per_trip
     FROM	trips_db.fact_trips ft
     INNER JOIN
-			trips_db.dim_city dc
-	ON		ft.city_id = dc.city_id
+		trips_db.dim_city dc
+    ON		ft.city_id = dc.city_id
     WHERE	ft.distance_travelled_km > 0 -- Exclude trips with 0 km to avoid division by zero. 
     GROUP BY
-			ft.city_id, dc.city_name
+		ft.city_id, dc.city_name
 ),
 overall_trip_metrics AS (
     -- Calculate the total trips across all cities
@@ -44,15 +44,15 @@ overall_trip_metrics AS (
 )
 -- Combine metrics with percentage contribution
 SELECT	ctm.city_name,
-		ctm.total_trips,
-		ctm.avg_fare_per_km,
-		ctm.avg_fare_per_trip,
-		ROUND((ctm.total_trips * 100.0) / otm.overall_total_trips, 2) AS trip_percentage_contribution
+	ctm.total_trips,
+	ctm.avg_fare_per_km,
+	ctm.avg_fare_per_trip,
+	ROUND((ctm.total_trips * 100.0) / otm.overall_total_trips, 2) AS trip_percentage_contribution
 FROM	city_trip_metrics ctm
 CROSS JOIN 
-		overall_trip_metrics otm
+	overall_trip_metrics otm
 ORDER BY
-		ctm.total_trips DESC
+	ctm.total_trips DESC
 ;
 ```
 
