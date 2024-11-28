@@ -24,17 +24,17 @@ Generate a report that displays the total trips, average fare per km, average fa
 WITH city_trip_metrics AS (
     -- Calculate total trips, average fare per km, and average fare per trip for each city
     SELECT	ft.city_id,
-			dc.city_name,
-			COUNT(ft.trip_id) AS total_trips,
-			ROUND(AVG(ft.fare_amount / ft.distance_travelled_km), 2) AS avg_fare_per_km,
-			ROUND(AVG(ft.fare_amount), 2) AS avg_fare_per_trip
+		dc.city_name,
+		COUNT(ft.trip_id) AS total_trips,
+		ROUND(AVG(ft.fare_amount / ft.distance_travelled_km), 2) AS avg_fare_per_km,
+		ROUND(AVG(ft.fare_amount), 2) AS avg_fare_per_trip
     FROM	trips_db.fact_trips ft
     INNER JOIN
-			trips_db.dim_city dc
-	ON		ft.city_id = dc.city_id
+		trips_db.dim_city dc
+    ON		ft.city_id = dc.city_id
     WHERE	ft.distance_travelled_km > 0 -- Exclude trips with 0 km to avoid division by zero. 
     GROUP BY
-			ft.city_id, dc.city_name
+		ft.city_id, dc.city_name
 ),
 overall_trip_metrics AS (
     -- Calculate the total trips across all cities
