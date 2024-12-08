@@ -55,7 +55,36 @@ ORDER BY
 	ctm.total_trips DESC
 ;
 ```
+**Explanation:**
 
+1. **city_trip_metrics CTE (City-Level Metrics)**
+This CTE computes trip-related metrics for each city:
+total_trips: Counts the total number of trips (COUNT(ft.trip_id)) for each city.
+
+avg_fare_per_km: Calculates the average fare per kilometer (ft.fare_amount / ft.distance_travelled_km). Trips with zero distance are excluded to prevent 
+division errors.
+
+avg_fare_per_trip: Computes the average fare per trip (AVG(ft.fare_amount)).
+
+The metrics are grouped by city (ft.city_id, dc.city_name) to ensure distinct calculations for each city.
+
+2. **overall_trip_metrics CTE (Overall Metrics)**
+
+This CTE calculates the total number of trips across all cities (SUM(total_trips)) derived from the city_trip_metrics CTE.
+
+3. **Main Query (Combining City-Level and Overall Metrics)**
+
+	Joins:
+	CROSS JOIN combines city_trip_metrics and overall_trip_metrics to allow each city to calculate its percentage contribution to the total trips.
+	CROSS JOIN is appropriate here as there is no shared key between the datasets, and the overall metric applies to all cities.
+
+	**Trip Contribution Calculation:**
+
+	Trip Percentage Contribution = (City Total Trips * 100 \ Overall Total Trips) 
+
+	Sorting:
+	Cities are sorted by their total trips in descending order (ORDER BY ctm.total_trips DESC) to highlight the highest-performing cities.
+	
 # Business Request 2: Monthly City-Level Trips Target Performance Report
 > Generate a report that evaluates the target performance for trips at the monthly and city level. For each city and month, compare the actual total trips with the target trips and categorize the performance as follows:
 > 
