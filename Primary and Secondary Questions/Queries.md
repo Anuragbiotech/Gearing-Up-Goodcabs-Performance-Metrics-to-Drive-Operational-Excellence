@@ -142,7 +142,7 @@ ORDER BY
 |Jaipur			    |new			      |8.99				          |8.99
 
 # 4. Peak and Low Demand Months by City
-• For each city, identify the month with the highest total trips (peak demand) and the month with the lowest total trips (low demand). This analysis will help Goodcabs understand seasonal patterns and adjust resources accordingly.
+• For each city, identify the month with the highest total trips (peak demand) and the month with the lowest total trips (low demand). This analysis will help Goodim_cityabs understand seasonal patterns and adjust resources acategorized_citiesordingly.
 
 ```sql
 WITH monthly_trip_counts AS (
@@ -218,30 +218,31 @@ ORDER BY
 
 ```sql
 WITH city_trip_frequency AS (
-	-- Calculate percentage distribution of repeat passenger counts by trip frequency in each city
-	SELECT	dim_repeat_trip_distribution.city_id,
-        	dim_city.city_name,
-        	dim_repeat_trip_distribution.trip_count,
-        	dim_repeat_trip_distribution.repeat_passenger_count,
-        	SUM(dim_repeat_trip_distribution.repeat_passenger_count) OVER (PARTITION BY dim_repeat_trip_distribution.city_id) AS total_repeat_passengers,
-        	ROUND(
-            		(dim_repeat_trip_distribution.repeat_passenger_count * 100.0) / 
-            		SUM(dim_repeat_trip_distribution.repeat_passenger_count) OVER (PARTITION BY dim_repeat_trip_distribution.city_id),
-            	2) AS percentage_repeat_passengers
-	FROM	trips_db.dim_repeat_trip_distribution
+-- Calculate percentage distribution of repeat passenger counts by trip frequency in each city
+SELECT	dim_repeat_trip_distribution.city_id,
+	dim_city.city_name,
+	dim_repeat_trip_distribution.trip_count,
+	dim_repeat_trip_distribution.repeat_passenger_count,
+	SUM(dim_repeat_trip_distribution.repeat_passenger_count) OVER (PARTITION BY dim_repeat_trip_distribution.city_id)
+	AS total_repeat_passengers,
+	ROUND(
+	(dim_repeat_trip_distribution.repeat_passenger_count * 100.0) / 
+	SUM(dim_repeat_trip_distribution.repeat_passenger_count) OVER (PARTITION BY dim_repeat_trip_distribution.city_id),
+	2) AS percentage_repeat_passengers
+FROM	trips_db.dim_repeat_trip_distribution
 	INNER JOIN
 		trips_db.dim_city
 	ON	dim_repeat_trip_distribution.city_id = dim_city.city_id
 ),
 categorized_cities AS (
 	-- Categorize cities into tourism-focused and business-focused
-	SELECT	city_id, 
-        	city_name,
-        	CASE
-			WHEN city_name IN ('Visakhapatnam', 'Mysore', 'Jaipur', 'Kochi') THEN 'Tourism-Focused'
-			WHEN city_name IN ('Surat', 'Vadodara', 'Indore', 'Lucknow') THEN 'Business-Focused'
-			ELSE 'Business plus Tourism'
-		END AS city_focus
+SELECT	city_id, 
+	city_name,
+	CASE
+	    WHEN city_name IN ('Visakhapatnam', 'Mysore', 'Jaipur', 'Kochi') THEN 'Tourism-Focused'
+	    WHEN city_name IN ('Surat', 'Vadodara', 'Indore', 'Lucknow') THEN 'Business-Focused'
+	    ELSE 'Business plus Tourism'
+	END AS city_focus
 	FROM	trips_db.dim_city
 ),
 combined_data AS (
@@ -366,5 +367,149 @@ ORDER BY
 • For each city, evaluate monthly performance against targets for total trips, new passengers, and average passenger ratings from targets_db. Determine if each metric met, exceeded, or missed the target, and calculate the percentage difference. Identify any consistent patterns in target achievement, particularly across tourism versus business-focused cities.
 
 ```sql
-
+WITH performance_vs_target AS (
+    -- Combine actual performance and target data
+    SELECT 
+        fact_passenger_summary.city_id,
+        dim_city.city_name,
+        fact_passenger_summary.month,
+        fact_passenger_summary.total_passengers,
+        fact_passenger_summary.new_passengers,
+        ft.avg_passenger_rating,
+        monthly_target_new_passengers.target_new_passengers,
+        monthly_target_trips.total_target_trips,
+        city_target_passenger_rating.target_avg_passenger_rating,
+        -- Calculate percentage differences
+        ROUND(
+            ((fact_passenger_summary.total_passengers - monthly_target_trips.total_target_trips) * 100.0) / monthly_target_trips.total_target_trips,
+            2
+        ) AS total_trips_pct_diff,
+        ROUND(
+            ((fact_passenger_summary.new_passengers - monthly_target_new_passengers.target_new_passengers) * 100.0) / monthly_target_new_passengers.target_new_passengers,
+            2
+        ) AS new_passengers_pct_diff,
+        ROUND(
+            ((ft.avg_passenger_rating - city_target_passenger_rating.target_avg_passenger_rating) * 100.0) / city_target_passenger_rating.target_avg_passenger_rating,
+            2
+        ) AS avg_rating_pct_diff,
+        -- Determine target status
+        CASE 
+            WHEN fact_passenger_summary.total_passengers > monthly_target_trips.total_target_trips THEN 'Exceeded'
+            WHEN fact_passenger_summary.total_passengers = monthly_target_trips.total_target_trips THEN 'Met'
+            ELSE 'Missed'
+        END AS total_trips_status,
+        CASE 
+            WHEN fact_passenger_summary.new_passengers > monthly_target_new_passengers.target_new_passengers THEN 'Exceeded'
+            WHEN fact_passenger_summary.new_passengers = monthly_target_new_passengers.target_new_passengers THEN 'Met'
+            ELSE 'Missed'
+        END AS new_passengers_status,
+        CASE 
+            WHEN ft.avg_passenger_rating > city_target_passenger_rating.target_avg_passenger_rating THEN 'Exceeded'
+             WHEN ft.avg_passenger_rating = city_target_passenger_rating.target_avg_passenger_rating THEN 'Met'
+            ELSE 'Missed'
+        END AS avg_rating_status
+    FROM trips_db.fact_passenger_summary
+    INNER JOIN trips_db.dim_city ON fact_passenger_summary.city_id = dim_city.city_id
+    INNER JOIN targets_db.monthly_target_trips monthly_target_trips ON fact_passenger_summary.city_id = monthly_target_trips.city_id AND fact_passenger_summary.month = monthly_target_trips.month
+    INNER JOIN targets_db.monthly_target_new_passengers ON fact_passenger_summary.city_id = monthly_target_new_passengers.city_id AND fact_passenger_summary.month = monthly_target_new_passengers.month
+    -- Calculate average passenger rating
+    INNER JOIN (
+        SELECT 
+            city_id, 
+            ROUND(AVG(passenger_rating), 2) AS avg_passenger_rating
+        FROM trips_db.fact_trips
+        GROUP BY city_id
+    ) ft ON fact_passenger_summary.city_id = ft.city_id
+    INNER JOIN targets_db.city_target_passenger_rating city_target_passenger_rating ON fact_passenger_summary.city_id = city_target_passenger_rating.city_id
+),
+categorized_cities AS (
+    -- Categorize cities into tourism-focused and business-focused
+    SELECT 
+        city_id, 
+        city_name,
+        CASE 
+            WHEN city_name IN ('Visakhapatnam', 'Mysore', 'Jaipur', 'Kochi') THEN 'Tourism-Focused'
+            WHEN city_name IN ('Surat', 'Vadodara', 'Indore', 'Lucknow') THEN 'Business-Focused'
+            ELSE 'Mixed'
+        END AS city_focus
+    FROM trips_db.dim_city
+)
+-- Combine with city categorization and summarize results
+SELECT 
+    performance_vs_target.city_name,
+    categorized_cities.city_focus,
+    Monthname(performance_vs_target.month) AS month_name,
+    performance_vs_target.total_trips_status,
+    performance_vs_target.new_passengers_status,
+    performance_vs_target.avg_rating_status,
+    performance_vs_target.total_trips_pct_diff,
+    performance_vs_target.new_passengers_pct_diff,
+    performance_vs_target.avg_rating_pct_diff
+FROM performance_vs_target
+INNER JOIN categorized_cities ON performance_vs_target.city_id = categorized_cities.city_id
+ORDER BY categorized_cities.city_focus, performance_vs_target.city_name, performance_vs_target.month;
 ```
+
+|city_name		|city_focus			|month_name		|total_trips_status	|passengers_status	|avg_rating_status		|total_trips_pct_diff	|new_passengers_pct_diff|avg_rating_pct_diff|
+|-----------------------|-------------------------------|-----------------------|-----------------------|-----------------------|--------------------------------|----------------------|-----------------------|--------------------
+|Indore			|Business-Focused		|January		|Missed			|Exceeded	  	|	Missed			|	-44.63		|	5.30		|-2.13
+|Indore			|Business-Focused		|February		|Missed			|Exceeded		|	Missed			|	-43.13		|	6.59		|-2.13
+|Indore			|Business-Focused		|March			|Missed			|Exceeded		|	Missed			|	-45.24		|	1.56		|-2.13
+|Indore			|Business-Focused		|April			|Missed			|Exceeded		|	Missed			|	-51.39		|	17.55		|-2.13
+|Indore			|Business-Focused		|May			|Missed			|Exceeded		|	Missed			|	-52.12		|	1.40		|-2.13
+|Indore			|Business-Focused		|June			|Missed			|Exceeded		|	Missed			|	-57.97		|	1.05		|-2.13
+|Lucknow		|Business-Focused		|January		|Missed			|Exceeded		|	Missed			|	-62.34		|	8.28		|-10.48
+|Lucknow		|Business-Focused		|February		|Missed			|Exceeded		|	Missed			|	-60.09		|	10.28		|-10.48
+|Lucknow		|Business-Focused		|March			|Missed			|Missed			|	Missed			|	-63.22		|	-1.28		|-10.48
+|Lucknow		|Business-Focused		|April			|Missed			|Exceeded		|	Missed			|	-65.39		|	15.55		|-10.48
+|Lucknow		|Business-Focused		|May			|Missed			|Missed			|	Missed			|	-68.30		|	-8.75		|-10.48
+|Lucknow		|Business-Focused		|June			|Missed			|Missed			|	Missed			|	-66.38		|	-1.45		|-10.48
+|Surat			|Business-Focused		|January		|Missed			|Exceeded		|	Missed			|	-59.82		|	21.60		|-8.29
+|Surat			|Business-Focused		|February		|Missed			|Exceeded		|	Missed			|	-60.37		|	12.70		|-8.29
+|Surat			|Business-Focused		|March			|Missed			|Missed			|	Missed			|	-61.78		|	-2.70		|-8.29
+|Surat			|Business-Focused		|April			|Missed			|Exceeded		|	Missed			|	-66.06		|	22.87		|-8.29
+|Surat			|Business-Focused		|May			|Missed			|Exceeded		|	Missed			|	-67.83		|	7.40		|-8.29
+|Surat			|Business-Focused		|June			|Missed			|Exceeded		|	Missed			|	-69.70		|	2.67		|-8.29
+|Vadodara		|Business-Focused		|January		|Missed			|Exceeded		|	Missed			|	-56.12		|	16.06		|-11.87
+|Vadodara		|Business-Focused		|February		|Missed			|Exceeded		|	Missed			|	-54.07		|	19.22		|-11.87
+|Vadodara		|Business-Focused		|March			|Missed			|Missed			|	Missed			|	-57.97		|	-2.06		|-11.87
+|Vadodara		|Business-Focused		|April			|Missed			|Exceeded		|	Missed			|	-61.55		|	9.13		|-11.87
+|Vadodara		|Business-Focused		|May			|Missed			|Missed			|	Missed			|	-65.29		|	-7.47		|-11.87
+|Vadodara		|Business-Focused		|June			|Missed			|Missed			|	Missed			|	-72.20		|	-26.40		|-11.87
+|Chandigarh		|Mixed				|January		|Missed			|Missed			|	Missed			|	-33.71		|	-2.00		|-0.25
+|Chandigarh		|Mixed				|February		|Missed			|Exceeded		|	Missed			|	-29.19		|	2.60		|-0.25
+|Chandigarh		|Mixed				|March			|Missed			|Missed			|	Missed			|	-41.43		|	-19.30		|-0.25
+|Chandigarh		|Mixed				|April			|Missed			|Missed			|	Missed			|	-45.25		|	-16.80		|-0.25
+|Chandigarh		|Mixed				|May			|Missed			|Missed			|	Missed			|	-38.35		|	-9.00		|-0.25
+|Chandigarh		|Mixed				|June			|Missed			|Missed			|	Missed			|	-45.05		|	-19.00		|-0.25
+|Coimbatore		|Mixed				|January		|Missed			|Exceeded		|	Missed			|	-36.74		|	21.47		|-4.48
+|Coimbatore		|Mixed				|February		|Missed			|Exceeded		|	Missed			|	-43.06		|	9.80		|-4.48
+|Coimbatore		|Mixed				|March			|Missed			|Exceeded		|	Missed			|	-43.86		|	2.53		|-4.48
+|Coimbatore		|Mixed				|April			|Missed			|Exceeded		|	Missed			|	-50.80		|	24.20		|-4.48
+|Coimbatore		|Mixed				|May			|Missed			|Exceeded		|	Missed			|	-55.91		|	3.90		|-4.48
+|Coimbatore		|Mixed				|June			|Missed			|Exceeded		|	Missed			|	-53.49		|	22.60		|-4.48
+|Jaipur			|Tourism-Focused		|January		|Missed			|Missed			|	Exceeded		|	-8.88		|	-13.14		|4.00
+|Jaipur			|Tourism-Focused		|February		|Missed			|Missed			|	Exceeded		|	-4.23		|	-10.09		|4.00
+|Jaipur			|Tourism-Focused		|March			|Missed			|Missed			|	Exceeded		|	-28.79		|	-38.19		|4.00
+|Jaipur			|Tourism-Focused		|April			|Missed			|Exceeded		|	Exceeded		|	-17.31		|	2.00		|4.00
+|Jaipur			|Tourism-Focused		|May			|Missed			|Missed			|	Exceeded		|	-24.48		|	-11.13		|4.00
+|Jaipur			|Tourism-Focused		|June			|Missed			|Missed			|	Exceeded		|	-26.78		|	-3.75		|4.00
+|Kochi			|Tourism-Focused		|January		|Missed			|Missed			|	Exceeded		|	-24.53		|	-2.70		|0.24
+|Kochi			|Tourism-Focused		|February		|Missed			|Missed			|	Exceeded		|	-28.37		|	-12.66		|0.24
+|Kochi			|Tourism-Focused		|March			|Missed			|Missed			|	Exceeded		|	-17.16		|	-2.70		|0.24
+|Kochi			|Tourism-Focused		|April			|Missed			|Exceeded		|	Exceeded		|	-27.61		|	23.48		|0.24
+|Kochi			|Tourism-Focused		|May			|Missed			|Exceeded		|	Exceeded		|	-30.87		|	9.23		|0.24
+|Kochi			|Tourism-Focused		|June			|Missed			|Missed			|	Exceeded		|	-54.89		|	-24.73		|0.24
+|Mysore			|Tourism-Focused		|January		|Exceeded		|Missed			|	Exceeded		|	6.45		|	-2.15		|2.35
+|Mysore			|Tourism-Focused		|February		|Exceeded		|Exceeded		|	Exceeded		|	14.50		|	5.35		|2.35
+|Mysore			|Tourism-Focused		|March			|Exceeded		|Missed			|	Exceeded		|	9.70		|	-0.70		|2.35
+|Mysore			|Tourism-Focused		|April			|Missed			|Missed			|	Exceeded		|	-17.12		|	-8.20		|2.35
+|Mysore			|Tourism-Focused		|May			|Missed			|Missed			|	Exceeded		|	-9.20		|	-3.95		|2.35
+|Mysore			|Tourism-Focused		|June			|Missed			|Missed			|	Exceeded		|	-11.88		|	-6.30		|2.35
+|Visakhapatnam		|Tourism-Focused		|January		|Missed			|Exceeded		|	Missed			|	-29.71		|	0.52		|-0.82
+|Visakhapatnam		|Tourism-Focused		|February		|Missed			|Missed			|	Missed			|	-29.56		|	-4.80		|-0.82
+|Visakhapatnam		|Tourism-Focused		|March			|Missed			|Missed			|	Missed			|	-31.27		|	-13.20		|-0.82
+|Visakhapatnam		|Tourism-Focused		|April			|Missed			|Missed			|	Missed			|	-43.26		|	-7.75		|-0.82
+|Visakhapatnam		|Tourism-Focused		|May			|Missed			|Missed			|	Missed			|	-42.20		|	-3.05		|-0.82
+|Visakhapatnam		|Tourism-Focused		|June			|Missed			|Missed			|	Missed			|	-45.96		|	-5.00		|-0.82
+
