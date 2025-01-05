@@ -89,3 +89,31 @@ Select relevant columns and order by city_name and month for a structured report
 
 # [Business Request - 3: Query Explanation](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20&%20Insights.md#business-request---3-city-level-passenger-trip-frequency-report)
 
+**Explanation:**
+
+1. City Total Repeat Passengers (city_total_repeat): This common table expression (CTE) calculates the total number of repeat passengers for each city.
+
+   Key Operations:
+   Extract the numeric value from trip_count (e.g., "3-Trips" becomes 3) using CAST(SUBSTRING_INDEX(drtd.trip_count, '-', 1) AS UNSIGNED).
+   Filter records to include only trip counts between 2 and 10.
+   Sum the repeat_passenger_count for each city.
+
+2. Percentage Distribution (percentage_distribution): This CTE calculates the percentage distribution of repeat passengers for each trip count category (2 to 10 trips) within each city.
+
+   Key Operations: For each city, calculate the percentage contribution of each trip_count_numeric to the city's total repeat passengers:
+
+   	>percentage = (repeat_passenger_count / total_repeat_passengers) x 100
+
+   Use a JOIN to bring in total_repeat_passengers from the city_total_repeat CTE.
+
+3. Final SELECT: Pivot the Data: The final query pivots the data to display trip count categories (2-Trips, 3-Trips, etc.) as columns, with the percentage values for each city.
+
+   Key Operations:
+   Use CASE expressions to create separate columns for each trip count category.
+   Use MAX() to ensure one value is selected for each column. Since there’s one percentage per city-trip count pair, MAX() works as a simple value selector.
+
+   **Further Explanation:**
+   Why Use MAX()?
+
+   When pivoting, there might be multiple rows for the same group (e.g., city and trip count).
+   To ensure that only a single value appears in each pivoted column for that group, an aggregate function like MAX() is applied. Since percentages are already calculated per group (e.g., city and trip count), taking the maximum works effectively as there is only one value.
