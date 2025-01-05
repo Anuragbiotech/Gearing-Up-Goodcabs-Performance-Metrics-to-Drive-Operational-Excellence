@@ -62,7 +62,7 @@ ORDER BY
 ;
 ```
 
-# [Business Request 2: Monthly City-Level Trips Target Performance Report](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20%26%20Explanation.md#business-request-2-monthly-city-level-trips-target-performance-report)
+# [Business Request 2: Query Explanation](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20%26%20Explanation.md#business-request-2-monthly-city-level-trips-target-performance-report)
 **Explanation:**
 
 1. **Aggregate Actual Trips:**
