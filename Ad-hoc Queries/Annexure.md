@@ -87,3 +87,5 @@ Select relevant columns and order by city_name and month for a structured report
 
 - The expression **DATE_FORMAT(ft.date, '%Y-%m-01') AS month** was used to standardize all dates in fact_trips to the first day of the respective month, enabling us to group and compare data at the monthly level.
 
+# [Business Request - 3: Query Explanation](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20&%20Insights.md#business-request---3-city-level-passenger-trip-frequency-report)
+
