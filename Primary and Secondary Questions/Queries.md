@@ -117,29 +117,31 @@ ORDER BY
         avg_passenger_rating,
         avg_driver_rating
 ;
-```
+
 |city_name 		  |passenger_type |avg_passenger_rating |avg_driver_rating|
-|---------------|---------------|---------------------|-----------------|
-|Vadodara		    |repeated		    |5.98				          |6.48
-|Lucknow		    |repeated		    |5.99				          |6.49
-|Surat			    |repeated		    |6.00				          |6.48
-|Indore			    |repeated		    |7.47				          |7.48
-|Coimbatore		  |repeated		    |7.48				          |7.48
-|Chandigarh		  |repeated		    |7.49				          |7.47
-|Surat			    |new			      |7.98				          |6.99
-|Lucknow		    |new			      |7.98				          |6.99
-|Vadodara		    |new			      |7.98				          |7.00
-|Mysore			    |repeated		    |7.98				          |8.97
-|Jaipur			    |repeated		    |7.99				          |8.98
-|Visakhapatnam	|repeated		    |7.99				          |8.99
-|Kochi			    |repeated		    |8.00				          |8.99
-|Indore			    |new			      |8.49				          |7.97
-|Chandigarh		  |new			      |8.49				          |7.99
-|Coimbatore		  |new			      |8.49				          |7.99
-|Visakhapatnam	|new			      |8.98				          |8.98
-|Mysore			    |new			      |8.98				          |8.98
-|Kochi			    |new			      |8.99				          |8.99
-|Jaipur			    |new			      |8.99				          |8.99
+|-------------------------|---------------|---------------------|-----------------|
+|Vadodara		  |repeated       |5.98		        |6.48
+|Lucknow		  |repeated       |5.99		        |6.49
+|Surat			  |repeated	  |6.00		        |6.48
+|Indore			  |repeated	  |7.47		        |7.48
+|Coimbatore		  |repeated	  |7.48		        |7.48
+|Chandigarh		  |repeated	  |7.49		        |7.47
+|Surat			  |new		  |7.98			|6.99
+|Lucknow		  |new		  |7.98			|6.99
+|Vadodara		  |new		  |7.98		        |7.00
+|Mysore			  |repeated	  |7.98		        |8.97
+|Jaipur			  |repeated	  |7.99		        |8.98
+|Visakhapatnam		  |repeated	  |7.99		        |8.99
+|Kochi			  |repeated	  |8.00		        |8.99
+|Indore			  |new		  |8.49		        |7.97
+|Chandigarh		  |new		  |8.49			|7.99
+|Coimbatore		  |new		  |8.49			|7.99
+|Visakhapatnam	          |new		  |8.98			|8.98
+|Mysore			  |new		  |8.98		        |8.98
+|Kochi			  |new		  |8.99			|8.99
+|Jaipur			  |new	          |8.99			|8.99
+```
+
 
 # 4. Peak and Low Demand Months by City
 • For each city, identify the month with the highest total trips (peak demand) and the month with the lowest total trips (low demand). This analysis will help Goodim_cityabs understand seasonal patterns and adjust resources acategorized_citiesordingly.
@@ -269,7 +271,6 @@ ORDER BY
 	city_focus,
 	repeat_passenger_contribution DESC
 ;
-```
 |city_name	|city_focus		|trip_count	|repeat_passenger_contribution|
 |---------------|-----------------------|---------------|-----------------------------|
 |Chandigarh	|Business plus Tourism	|2-Trips	|	5.39
@@ -326,15 +327,15 @@ ORDER BY
 |Lucknow	|Business-Focused	|8-Trips	|	1.07
 |Lucknow	|Business-Focused	|9-Trips	|	0.32
 |Lucknow	|Business-Focused	|10-Trips	|	0.19
-|Mysore		|Tourism-Focused		|2-Trips	|	8.13
-|Mysore		|Tourism-Focused		|3-Trips	|	4.08
-|Mysore		|Tourism-Focused		|4-Trips	|	2.12
-|Mysore		|Tourism-Focused		|5-Trips	|	0.97
-|Mysore		|Tourism-Focused		|6-Trips	|	0.68
-|Mysore		|Tourism-Focused		|7-Trips	|	0.30
-|Mysore		|Tourism-Focused		|8-Trips	|	0.24
-|Mysore		|Tourism-Focused		|9-Trips	|	0.09
-|Mysore		|Tourism-Focused		|10-Trips	|	0.08
+|Mysore		|Tourism-Focused	|2-Trips	|	8.13
+|Mysore		|Tourism-Focused	|3-Trips	|	4.08
+|Mysore		|Tourism-Focused	|4-Trips	|	2.12
+|Mysore		|Tourism-Focused	|5-Trips	|	0.97
+|Mysore		|Tourism-Focused	|6-Trips	|	0.68
+|Mysore		|Tourism-Focused	|7-Trips	|	0.30
+|Mysore		|Tourism-Focused	|8-Trips	|	0.24
+|Mysore		|Tourism-Focused	|9-Trips	|	0.09
+|Mysore		|Tourism-Focused	|10-Trips	|	0.08
 |Surat		|Business-Focused	|5-Trips	|	3.29
 |Surat		|Business-Focused	|6-Trips	|	3.07
 |Surat		|Business-Focused	|4-Trips	|	2.76
@@ -353,15 +354,17 @@ ORDER BY
 |Vadodara	|Business-Focused	|8-Trips	|	0.96
 |Vadodara	|Business-Focused	|9-Trips	|	0.34
 |Vadodara	|Business-Focused	|10-Trips	|	0.27
-|Visakhapatnam	|Tourism-Focused		|2-Trips	|	8.54
-|Visakhapatnam	|Tourism-Focused		|3-Trips	|	4.16
-|Visakhapatnam	|Tourism-Focused		|4-Trips	|	1.66
-|Visakhapatnam	|Tourism-Focused		|5-Trips	|	0.91
-|Visakhapatnam	|Tourism-Focused		|6-Trips	|	0.53
-|Visakhapatnam	|Tourism-Focused		|7-Trips	|	0.33
-|Visakhapatnam	|Tourism-Focused		|8-Trips	|	0.23
-|Visakhapatnam	|Tourism-Focused		|10-Trips	|	0.16
-|Visakhapatnam	|Tourism-Focused		|9-Trips	|	0.15
+|Visakhapatnam	|Tourism-Focused	|2-Trips	|	8.54
+|Visakhapatnam	|Tourism-Focused	|3-Trips	|	4.16
+|Visakhapatnam	|Tourism-Focused	|4-Trips	|	1.66
+|Visakhapatnam	|Tourism-Focused	|5-Trips	|	0.91
+|Visakhapatnam	|Tourism-Focused	|6-Trips	|	0.53
+|Visakhapatnam	|Tourism-Focused	|7-Trips	|	0.33
+|Visakhapatnam	|Tourism-Focused	|8-Trips	|	0.23
+|Visakhapatnam	|Tourism-Focused	|10-Trips	|	0.16
+|Visakhapatnam	|Tourism-Focused	|9-Trips	|	0.15
+```
+
 
 # 7. Monthly Target Achievement Analysis for Key Metrics
 • For each city, evaluate monthly performance against targets for total trips, new passengers, and average passenger ratings from targets_db. Determine if each metric met, exceeded, or missed the target, and calculate the percentage difference. Identify any consistent patterns in target achievement, particularly across tourism versus business-focused cities.
@@ -448,10 +451,9 @@ SELECT
 FROM performance_vs_target
 INNER JOIN categorized_cities ON performance_vs_target.city_id = categorized_cities.city_id
 ORDER BY categorized_cities.city_focus, performance_vs_target.city_name, performance_vs_target.month;
-```
 
 |city_name		|city_focus			|month_name		|total_trips_status	|passengers_status	|avg_rating_status		|total_trips_pct_diff	|new_passengers_pct_diff|avg_rating_pct_diff|
-|-----------------------|-------------------------------|-----------------------|-----------------------|-----------------------|--------------------------------|----------------------|-----------------------|--------------------
+|-----------------------|-------------------------------|-----------------------|-----------------------|-----------------------|-------------------------------|-----------------------|-----------------------|--------------------
 |Indore			|Business-Focused		|January		|Missed			|Exceeded	  	|	Missed			|	-44.63		|	5.30		|-2.13
 |Indore			|Business-Focused		|February		|Missed			|Exceeded		|	Missed			|	-43.13		|	6.59		|-2.13
 |Indore			|Business-Focused		|March			|Missed			|Exceeded		|	Missed			|	-45.24		|	1.56		|-2.13
@@ -512,6 +514,9 @@ ORDER BY categorized_cities.city_focus, performance_vs_target.city_name, perform
 |Visakhapatnam		|Tourism-Focused		|April			|Missed			|Missed			|	Missed			|	-43.26		|	-7.75		|-0.82
 |Visakhapatnam		|Tourism-Focused		|May			|Missed			|Missed			|	Missed			|	-42.20		|	-3.05		|-0.82
 |Visakhapatnam		|Tourism-Focused		|June			|Missed			|Missed			|	Missed			|	-45.96		|	-5.00		|-0.82
+
+```
+
 
 
 # 8. Highest and Lowest Repeat Passenger Rate (RPR%) by City and Month
