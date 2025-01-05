@@ -113,6 +113,7 @@ Select relevant columns and order by city_name and month for a structured report
    Use MAX() to ensure one value is selected for each column. Since there’s one percentage per city-trip count pair, MAX() works as a simple value selector.
 
    **Further Explanation:**
+
    Why Use MAX()?
 
    When pivoting, there might be multiple rows for the same group (e.g., city and trip count).
