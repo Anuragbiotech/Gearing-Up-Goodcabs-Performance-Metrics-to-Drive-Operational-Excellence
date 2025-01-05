@@ -118,3 +118,15 @@ Select relevant columns and order by city_name and month for a structured report
 
    When pivoting, there might be multiple rows for the same group (e.g., city and trip count).
    To ensure that only a single value appears in each pivoted column for that group, an aggregate function like MAX() is applied. Since percentages are already calculated per group (e.g., city and trip count), taking the maximum works effectively as there is only one value.
+
+# [Business Request - 4: Query Explanation](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20&%20Insights.md#business-request---4-identify-cities-with-highest-and-lowest-total-new-passengers)
+
+**Explanation:**
+
+1. City Total New Passengers (city_total_new_passengers): This CTE sums up total new passengers for each city. It takes the value from fact_passenger_summary table of the trips_db database.
+2. City Ranking (city_ranking): This CTE ranks the total_new_passengers by descending and ascending order. This ordering further helps in the next CTE to categorize cities as Top 3 and Bottom 3 according to most new_passengers and least new passengers.
+3. Categorized Cities (categorized_cities): The Business Report 3 asks about Top 3 and Bottom 3 cities by New Passenger. This CTE helps in categorizing cities in these categories. 
+Here, CASE statements are used to categorize rankings (desc. order) where rank_desc is less than or equal to 3 then Top 3 and when rank_asc is less than or equal to 3 then Bottom 3.
+
+At the end, all relevant columns are referenced by SELECT statement and filtered by WHERE clause, ie., including Top 3 and Bottom 3.
+
