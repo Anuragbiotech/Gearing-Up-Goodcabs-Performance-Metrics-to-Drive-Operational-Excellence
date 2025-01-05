@@ -513,3 +513,83 @@ ORDER BY categorized_cities.city_focus, performance_vs_target.city_name, perform
 |Visakhapatnam		|Tourism-Focused		|May			|Missed			|Missed			|	Missed			|	-42.20		|	-3.05		|-0.82
 |Visakhapatnam		|Tourism-Focused		|June			|Missed			|Missed			|	Missed			|	-45.96		|	-5.00		|-0.82
 
+
+# 8. Highest and Lowest Repeat Passenger Rate (RPR%) by City and Month
+• Analyse the Repeat Passenger Rate (RPR%) for each city across the six-month period. Identify the top 2 and bottom 2 cities based on their RPR% to determine which locations have the strongest and weakest rates.
+• Similarly, analyse the RPR% by month across all cities and identify the months with the highest and lowest repeat passenger rates. This will help to pinpoint any seasonal patterns or months with higher repeat passenger loyalty.
+
+```sql
+WITH city_rpr AS (
+    -- Calculate RPR% for each city over the six-month period
+    SELECT 
+        fact_passenger_summary.city_id,
+        dim_city.city_name,
+        ROUND(
+            (SUM(fact_passenger_summary.repeat_passengers) * 100.0) / SUM(fact_passenger_summary.total_passengers), 
+            2
+        ) AS avg_rpr
+    FROM trips_db.fact_passenger_summary
+    INNER JOIN trips_db.dim_city ON fact_passenger_summary.city_id = dim_city.city_id
+    GROUP BY fact_passenger_summary.city_id, dim_city.city_name
+),
+month_rpr AS (
+    -- Calculate RPR% for each month across all cities
+    SELECT 
+        fact_passenger_summary.month,
+        dim_date.month_name,
+        ROUND(
+            (SUM(fact_passenger_summary.repeat_passengers) * 100.0) / SUM(fact_passenger_summary.total_passengers), 
+            2
+        ) AS monthly_rpr
+    FROM trips_db.fact_passenger_summary
+    INNER JOIN trips_db.dim_date ON fact_passenger_summary.month = dim_date.start_of_month
+    GROUP BY fact_passenger_summary.month, dim_date.month_name
+),
+ranked_cities AS (
+    -- Rank cities based on their RPR%
+    SELECT 
+        city_name,
+        avg_rpr,
+        RANK() OVER (ORDER BY avg_rpr DESC) AS rpr_rank_top,
+        RANK() OVER (ORDER BY avg_rpr ASC) AS rpr_rank_bottom
+    FROM city_rpr
+),
+ranked_months AS (
+    -- Rank months based on their RPR%
+    SELECT 
+        month_name,
+        monthly_rpr,
+        RANK() OVER (ORDER BY monthly_rpr DESC) AS rpr_rank_high,
+        RANK() OVER (ORDER BY monthly_rpr ASC) AS rpr_rank_low
+    FROM month_rpr
+)
+-- Combine city and month analyses to identify top/bottom performers
+SELECT 
+    -- City Analysis
+    'City Analysis' AS analysis_type,
+    CASE 
+        WHEN ranked_cities.rpr_rank_top <= 2 THEN 'Top 2 Cities'
+        WHEN ranked_cities.rpr_rank_bottom <= 2 THEN 'Bottom 2 Cities'
+    END AS category,
+    ranked_cities.city_name AS name,
+    ranked_cities.avg_rpr AS rpr_percentage
+FROM ranked_cities
+WHERE ranked_cities.rpr_rank_top <= 2 OR ranked_cities.rpr_rank_bottom <= 2
+
+UNION ALL
+
+SELECT 
+    -- Month Analysis
+    'Month Analysis' AS analysis_type,
+    CASE 
+        WHEN ranked_months.rpr_rank_high = 1 THEN 'Month with Highest RPR%'
+        WHEN ranked_months.rpr_rank_low = 1 THEN 'Month with Lowest RPR%'
+    END AS category,
+    ranked_months.month_name AS name,
+    ranked_months.monthly_rpr AS rpr_percentage
+FROM ranked_months
+WHERE ranked_months.rpr_rank_high = 1 OR ranked_months.rpr_rank_low = 1
+;
+```
+
+![image](https://github.com/user-attachments/assets/3d263345-4386-4e14-8d12-aa283d776ee2)
