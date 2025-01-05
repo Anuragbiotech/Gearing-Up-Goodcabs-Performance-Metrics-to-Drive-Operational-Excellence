@@ -126,7 +126,27 @@ Select relevant columns and order by city_name and month for a structured report
 1. City Total New Passengers (city_total_new_passengers): This CTE sums up total new passengers for each city. It takes the value from fact_passenger_summary table of the trips_db database.
 2. City Ranking (city_ranking): This CTE ranks the total_new_passengers by descending and ascending order. This ordering further helps in the next CTE to categorize cities as Top 3 and Bottom 3 according to most new_passengers and least new passengers.
 3. Categorized Cities (categorized_cities): The Business Report 3 asks about Top 3 and Bottom 3 cities by New Passenger. This CTE helps in categorizing cities in these categories. 
-Here, CASE statements are used to categorize rankings (desc. order) where rank_desc is less than or equal to 3 then Top 3 and when rank_asc is less than or equal to 3 then Bottom 3.
+   Here, CASE statements are used to categorize rankings (desc. order) where rank_desc is less than or equal to 3 then Top 3 and when rank_asc is less than or equal to 3 then Bottom 3.
 
-At the end, all relevant columns are referenced by SELECT statement and filtered by WHERE clause, ie., including Top 3 and Bottom 3.
+   At the end, all relevant columns are referenced by SELECT statement and filtered by WHERE clause, ie., including Top 3 and Bottom 3.
 
+# [Business Request - 5: Query Explanation](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20&%20Insights.md#business-request---5-identify-month-with-highest-revenue-for-each-city)
+
+**Explanation:**
+
+1. City Monthly Revenue (city_monthly_revenue): This CTE sums up the fare_amount in the fact_trips table of the trips_db database for each month and city combination.
+2. City Total Revenue (city_total_revenue): This CTE sums up monthly_revenue for each city.
+3. City Highest Revenue Month (city_highest_revenue_month): This CTE ranks the monthly_revenue in descending order so that in the final output we can extract the city and month with only highest revenue.
+
+At the end, all relevant columns are referenced by SELECT statement and filtered by WHERE clause to include rank_desc = 1 so that only city with highest montly revenue will show up in the output.
+
+# [Business Request - 6: Query Explanation](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20&%20Insights.md#business-request---6-repeat-passenger-rate-analysis)
+
+**Explanation:**
+
+1. Monthly Metrics (monthly_metrics): This CTE finds total passengers, total repeat passengers, and monthly repeat passenger rate for each city and month.
+2. City Wide Metrics (city_wide_metrics): This CTE finds overall repeate passenger rate for each city.
+
+The final output is all the relevant columns plus monthly_repeat_passenger_rate (city and month wise combination) and city_repeat_passenger_rate for each city. 
+
+>Note: Keep in mind that city_repeat_passenger_rate is same for each city.
