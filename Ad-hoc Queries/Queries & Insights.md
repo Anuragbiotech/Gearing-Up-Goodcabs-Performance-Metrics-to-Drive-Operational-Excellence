@@ -57,6 +57,20 @@ ORDER BY
 ```
 ![image](https://github.com/user-attachments/assets/4429be4a-a3d2-4db6-879b-0488ee60cf0c)
 
+## Insights:
+The purpose of this query is to analyze the trip volume, assess pricing efficiency, and determine how each city contributes to the total number of trips.
+
+1. The result set contains four metrics for each city, i.e., 
+* total_trips: - Total distinct trips.
+* avg_fare_per_km: - Average fare per km.
+* avg_fare_per_trip: - Average fare per trip
+* trip_percentage_contribution: - Each city's contribution to overall trip.
+
+2. Cities with High Trip Volume:
+* Jaipur has the highest trip volume, which is 76,888, contributing 18.05% to the overall number of trips.
+* Lucknow and Surat are in second and third place, with trip volumes of 64,299 and 54,843, contributing 15.10% and 12.88% to the overall number of trips.
+These cities are likely to have high passenger demand and may require a focus on maintaining service quality and scaling operations.
+
 [Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request-1-query-explanation)
 
 	
