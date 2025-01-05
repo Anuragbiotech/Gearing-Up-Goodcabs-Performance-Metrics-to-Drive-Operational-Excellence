@@ -57,6 +57,7 @@ ORDER BY
 ```
 ![image](https://github.com/user-attachments/assets/4429be4a-a3d2-4db6-879b-0488ee60cf0c)
 
+[Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request-1-query-explanation)
 
 	
 # Business Request 2: Monthly City-Level Trips Target Performance Report
@@ -178,6 +179,7 @@ ORDER BY
 |Visakhapatnam	|June		|5000			|4478			|Below Target	   |-10.44
 
 ```
+[Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request-2-query-explanation)
 
 # Business Request - 3: City-Level Passenger Trip Frequency Report
 > Generate a report that shows the percentage distribution of repeat passengers by the number of trips they have taken in each city. Calculate the percentage of repeat passengers who took 2 trips, 3 trips, and so on, up to 10 trips.
@@ -231,7 +233,6 @@ ORDER BY
 ;
 
 
-
 |city_name	|2-Trips |3-Trips |4-Trips |5-Trips |6-Trips |7-Trips |8-Trips |9-Trips	|10-Trips|
 |---------------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
 |Chandigarh	|6.67	 |3.59	  |4.18	   |2.50    |1.60    |1.48    |0.65    |0.59	|0.37	
@@ -246,6 +247,7 @@ ORDER BY
 |Visakhapatnam	|9.89	 |6.46	  |2.25	   |1.25    |0.78    |0.47    |0.27    |0.20	|0.22
 
 ```
+[Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request---3-query-explanation)
 
 # Business Request - 4: Identify Cities with Highest and Lowest Total New Passengers
 >Generate a report that calculates the total new passengers for each city and ranks them based on this value. Identify the top 3 cities with the highest number of new passengers as well as the bottom 3 cities with the lowest number of new passengers, categorising them as "Top 3" and "Bottom 3" accordingly.
@@ -297,6 +299,8 @@ ORDER BY
 ```
 
 ![image](https://github.com/user-attachments/assets/f2a5382c-fd03-4ea1-847e-77bb6cba4887)
+
+[Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request---4-query-explanation)
 
 # Business Request - 5: Identify Month with Highest Revenue for Each City
 >Generate a report that identifies the month with the highest revenue for each city. For each city, display the month_name, the revenue amount for that month, and the percentage contribution of that month's revenue to the city's total revenue.
@@ -352,6 +356,7 @@ ORDER BY
 
 ![image](https://github.com/user-attachments/assets/adf219a0-45bb-40f7-b661-d1261cc383f8)
 
+[Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request---5-query-explanation)
 
 # Business Request - 6: Repeat Passenger Rate Analysis
 >Generate a report that calculates two metrics:
@@ -472,3 +477,4 @@ ORDER BY
 
 
 ```
+[Annexure](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Annexure.md#business-request---6-query-explanation)
