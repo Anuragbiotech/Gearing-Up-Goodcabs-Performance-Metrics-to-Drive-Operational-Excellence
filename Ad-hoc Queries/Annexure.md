@@ -1,4 +1,4 @@
-[Business-Request-1-City-Level-Fare-and-Trip-Summary-Report](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/edit/main/Ad-hoc%20Queries/Queries%20%26%20Explanation.md)
+[Business-Request-1-City-Level-Fare-and-Trip-Summary-Report](https://github.com/Anuragbiotech/Gearing-Up-Goodcabs-Performance-Metrics-to-Drive-Operational-Excellence/blob/main/Ad-hoc%20Queries/Queries%20&%20Explanation.md#business-request-1-city-level-fare-and-trip-summary-report)
 
 **Explanation:**
 
